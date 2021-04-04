@@ -116,6 +116,8 @@ Adafruit_SSD1325 display(OLED_DC, OLED_RESET, OLED_CS);
 // Ros handle define. You can set number of publishers and subscribers here if you need to.
 ros::NodeHandle oled_node;
 
+String last_message = "";
+
 void messageCb(const std_msgs::String &msg){ 
     String message = String(msg.data);
     oled_node.loginfo("Echoing menu display message recieved: ");
@@ -125,6 +127,11 @@ void messageCb(const std_msgs::String &msg){
 
     bool literal = true;
 
+    if(message == last_message){
+        return;
+    }
+    last_message = message;
+    
     String signifier = message.substring(0,4);
     oled_node.logdebug(signifier.c_str());
     literal = (signifier == "LIT;"); //Set literal equal to the value provided by comparing the signifier to the LIT signifier.
@@ -196,5 +203,5 @@ void loco_logo(){
     display.clearDisplay();
     display.drawBitmap(0,0, loco, 128, 64,1);
     display.display();
-    delay(5000);
+    delay(100);
 }
